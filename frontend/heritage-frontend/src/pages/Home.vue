@@ -1,36 +1,27 @@
 <template>
-  <section>
-    <h2 class="text-4xl font-extrabold mb-10 text-center">
-      Explore Heritage Journeys
-    </h2>
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Explore Heritage Journeys</h1>
 
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid md:grid-cols-3 gap-6">
       <div
         v-for="pkg in packages"
         :key="pkg.id"
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6
-               hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
+        class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow"
       >
-        <h3 class="text-2xl font-bold mb-2">
-          {{ pkg.name }}
-        </h3>
-
-        <div class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-          <p>📅 Runs on <span class="font-semibold">{{ pkg.running_day }}</span></p>
-          <p>⏳ {{ pkg.duration }} days</p>
-        </div>
+        <h3 class="text-xl font-semibold">{{ pkg.name }}</h3>
+        <p class="text-sm text-gray-500">
+          Runs on {{ pkg.running_day }} • {{ pkg.duration }} days
+        </p>
 
         <router-link
           :to="`/package/${pkg.id}`"
-          class="inline-block mt-6 px-5 py-2 rounded-full
-                 bg-indigo-600 text-white font-semibold
-                 hover:bg-indigo-700 transition"
+          class="inline-block mt-4 text-indigo-600 font-semibold"
         >
           View Journey →
         </router-link>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup>

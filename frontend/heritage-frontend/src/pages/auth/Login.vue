@@ -71,9 +71,17 @@ const submit = async () => {
 
   if (!isRegister.value) {
     auth.login(data)
+    await new Promise(r => setTimeout(r, 50))
     router.push(data.role === 'admin' ? '/admin' : '/')
   } else {
     isRegister.value = false
+  }
+  if (isRegister.value) {
+    isRegister.value = false
+    name.value = ''
+    email.value = ''
+    password.value = ''
+    role.value = 'user'
   }
 }
 </script>

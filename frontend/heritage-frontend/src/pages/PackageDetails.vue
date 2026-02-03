@@ -1,70 +1,22 @@
 <template>
   <div>
-    <!-- Package Header -->
-    <div class="mb-12">
-      <h1 class="text-4xl font-extrabold mb-2">
-        {{ pkg?.name }}
-      </h1>
-      <p class="text-gray-600 dark:text-gray-300">
-        Runs on {{ pkg?.running_day }} • {{ pkg?.duration }} days
-      </p>
-    </div>
+    <h1 class="text-4xl font-bold mb-2">{{ pkg?.name }}</h1>
+    <p class="text-gray-500 mb-8">
+      Runs on {{ pkg?.running_day }} • {{ pkg?.duration }} days
+    </p>
 
-    <!-- Timeline -->
-    <div class="relative border-l-4 border-indigo-600 pl-6 sm:pl-8 space-y-10">
-      <div
-        v-for="(stop, index) in routes"
-        :key="index"
-        class="relative animate-[fadeInUp_0.4s_ease-out_both]"
-        :style="{ animationDelay: `${index * 80}ms` }"
-      >
-        <!-- Dot -->
-        <div
-          class="absolute -left-[14px] top-1
-                 w-6 h-6 rounded-full
-                 bg-indigo-600
-                 border-4 border-white dark:border-gray-900"
-        ></div>
+    <div class="relative border-l-4 border-indigo-600 pl-8 space-y-8">
+      <div v-for="r in routes" :key="r.id" class="relative">
+        <span class="absolute -left-4 top-1 w-6 h-6 bg-indigo-600 rounded-full"></span>
 
-        <!-- Card -->
-        <div
-          class="bg-white dark:bg-gray-800
-                 p-6 rounded-xl shadow-lg
-                 hover:shadow-2xl transition"
-        >
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-xl font-bold">
-              {{ stop.station }}
-            </h3>
-
-            <span
-              class="px-3 py-1 text-xs rounded-full font-semibold"
-              :class="stop.direction === 'DOWN'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200'
-                : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200'"
-            >
-              {{ stop.direction }}
-            </span>
-          </div>
-
-          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            Day {{ stop.day_no }}
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h3 class="font-bold text-lg">{{ r.station }}</h3>
+          <p class="text-sm text-gray-500">
+            Day {{ r.day_no }} • {{ r.direction }}
           </p>
-
-          <div class="flex gap-6 text-sm">
-            <p>
-              ⏱ Arrival:
-              <span class="font-semibold">
-                {{ stop.arrival || '—' }}
-              </span>
-            </p>
-            <p>
-              🚆 Departure:
-              <span class="font-semibold">
-                {{ stop.departure || '—' }}
-              </span>
-            </p>
-          </div>
+          <p class="text-sm">
+            Arrival: {{ r.arrival || '—' }} | Departure: {{ r.departure || '—' }}
+          </p>
         </div>
       </div>
     </div>
@@ -81,22 +33,7 @@ const routes = ref([])
 
 onMounted(async () => {
   const id = route.params.id
-
-  // Package details
-  const pkgRes = await fetch(`http://localhost:5000/api/packages/${id}`)
-  pkg.value = await pkgRes.json()
-
-  // Route details
-  const routeRes = await fetch(
-    `http://localhost:5000/api/packages/${id}/routes`
-  )
-
-  const allRoutes = await routeRes.json()
-
-  // DOWN first, then UP
-  routes.value = [
-    ...allRoutes.filter(r => r.direction === 'DOWN'),
-    ...allRoutes.filter(r => r.direction === 'UP'),
-  ]
+  pkg.value = await fetch(`http://localhost:5000/api/packages/${id}`).then(r=>r.json())
+  routes.value = await fetch(`http://localhost:5000/api/packages/${id}/routes`).then(r=>r.json())
 })
 </script>
