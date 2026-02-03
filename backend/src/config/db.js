@@ -1,4 +1,5 @@
-const { Pool } = require('pg');
+import pkg from 'pg'
+const { Pool } = pkg
 
 const pool = new Pool({
   host: 'localhost',
@@ -6,10 +7,6 @@ const pool = new Pool({
   password: '123',
   database: 'heritage_express',
   port: 5432
-});
+})
 
-pool.connect()
-  .then(() => console.log('✅ PostgreSQL connected'))
-  .catch(err => console.error('❌ PostgreSQL connection error', err));
-
-module.exports = pool;
+export default pool

@@ -1,14 +1,73 @@
-const express = require('express');
-const router = express.Router();
-const packageController = require('../controllers/packageController');
+import express from 'express'
+import pool from '../config/db.js'
 
-// list all packages
-router.get('/', packageController.getAllPackages);
+const router = express.Router()
 
-// single package
-router.get('/:id', packageController.getPackageById);
+/**
+ * GET all packages
+ * URL: /api/packages
+ */
+router.get('/', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM packages ORDER BY id'
+    )
+    res.json(result.rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Failed to fetch packages' })
+  }
+})
 
-// routes for a package
-router.get('/:id/routes', packageController.getPackageRoutes);
+/**
+ * GET single package by ID
+ * URL: /api/packages/:id
+ */
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const result = await pool.query(
+      'SELECT * FROM packages WHERE id = $1',
+      [id]
+    )
 
-module.exports = router;
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Package not found' })
+    }
+
+    res.json(result.rows[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Failed to fetch package' })
+  }
+})
+
+/**
+ * GET routes for a package
+ * URL: /api/packages/:id/routes
+ */
+router.get('/:id/routes', async (req, res) => {
+  try {
+    const { id } = req.params
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM package_routes
+      WHERE package_id = $1
+      ORDER BY day_no, direction
+      `,
+      [id]
+    )
+
+    res.json(result.rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Failed to fetch routes' })
+  }
+})
+
+/**
+ * ✅ THIS IS THE IMPORTANT FIX
+ * DEFAULT EXPORT (matches app.js import)
+ */
+export default router

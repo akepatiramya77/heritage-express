@@ -1,19 +1,20 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express'
+import cors from 'cors'
+import authRoutes from './routes/auth.js'
+import packageRoutes from './routes/packageRoutes.js'
 
-const packageRoutes = require('./routes/packageRoutes');
+const app = express()
 
-const app = express();
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}))
 
-app.use(cors());
-app.use(express.json());
+app.use(express.json())
 
-app.get('/test', (req, res) => {
-  res.send('Test route working');
-});
-
-app.use('/api/packages', packageRoutes);
+app.use('/api/auth', authRoutes)
+app.use('/api/packages', packageRoutes)
 
 app.listen(5000, () => {
-  console.log('Backend running on port 5000');
-});
+  console.log('✅ Backend running on http://localhost:5000')
+})
